@@ -28,6 +28,13 @@ const ROUTES = {
   FIO_ADDRESS_RENEW: '/fio-address-renew',
   FIO_DOMAIN_RENEW: '/fio-domain-renew',
   FIO_NAME_RENEW_RESULTS: '/fio-name-results',
+  FIO_LIST_TOKEN: '/fio-list-token',
+  FIO_LINK_TOKEN: '/fio-link-token',
+  FIO_LINK_TOKEN_CONFIRMATION: '/fio-link-token-comfirmation',
+  FIO_EDIT_LINK: '/fio-edit-link',
+  FIO_EDIT_LINK_CONFIRMATION: '/fio-edit-link-confirmation',
+  FIO_DELETE_LINK: '/fio-delete-link',
+  FIO_DELETE_LINK_CONFIRMATION: '/fio-delete-link-confirmation',
 };
 
 export { ROUTES };

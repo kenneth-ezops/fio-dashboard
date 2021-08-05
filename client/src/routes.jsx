@@ -24,8 +24,17 @@ import FioDomainStatusChangeResultsPage from './pages/FioDomainStatusChangeResul
 import FioAddressRenewPage from './pages/FioAddressRenewPage';
 import FioDomainRenewPage from './pages/FioDomainRenewPage';
 import FioNameRenewResultsPage from './pages/FioNameRenewResultsPage';
+import FioListTokenPage from './pages/FioListTokenPage';
+import FioLinkTokenPage from './pages/FioLinkTokenPage';
+import FioLinkTokenConfirmationPage from './pages/FioLinkTokenConfirmationPage';
+import FioEditLinkPage from './pages/FioEditLinkPage';
+import FioEditLinkConfirmationPage from './pages/FioEditLinkConfirmationPage';
+import FioDeleteLinkPage from './pages/FioDeleteLinkPage';
+import FioDeleteLinkConfirmationPage from './pages/FioDeleteLinkConfirmationPage';
 
 import { ROUTES } from './constants/routes';
+
+const FIO_LIST_TOKEN_PARENT_ROUTE = `${ROUTES.FIO_LIST_TOKEN}/:id`;
 
 const Routes = () => (
   <MainLayout>
@@ -99,6 +108,35 @@ const Routes = () => (
           path={ROUTES.FIO_NAME_RENEW_RESULTS}
           component={FioNameRenewResultsPage}
           excat
+        />
+
+        <PrivateRoute
+          path={FIO_LIST_TOKEN_PARENT_ROUTE}
+          component={FioListTokenPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_LINK_TOKEN}`}
+          component={FioLinkTokenPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_LINK_TOKEN_CONFIRMATION}`}
+          component={FioLinkTokenConfirmationPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_EDIT_LINK}`}
+          component={FioEditLinkPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_EDIT_LINK_CONFIRMATION}`}
+          component={FioEditLinkConfirmationPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_DELETE_LINK}`}
+          component={FioDeleteLinkPage}
+        />
+        <PrivateRoute
+          path={`${FIO_LIST_TOKEN_PARENT_ROUTE}/${ROUTES.FIO_DELETE_LINK_CONFIRMATION}`}
+          component={FioDeleteLinkConfirmationPage}
         />
 
         <AuthContainer />
