@@ -39,9 +39,9 @@ jobs:
       - run:
           name: Install packages required for deploy
           command: sudo apt-get update && sudo apt-get install -y gettext-base rsync
-      # - run:
-      #     name: Processing deploy
-      #     command: if [ "$CIRCLE_BRANCH" == "master" ]; then NODE_ENV="production" ./bin/deploy.sh; fi
+      - run:
+          name: Processing deploy
+          command: if [ "$CIRCLE_BRANCH" == "master" ]; then NODE_ENV="production" ./bin/deploy.sh; fi
 
 
 workflows:
