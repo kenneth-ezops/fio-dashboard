@@ -35,6 +35,7 @@ import {
   faTrash,
   faWallet,
   faPlusCircle,
+  faSignature,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -85,6 +86,7 @@ library.add(
   faExclamationTriangle,
   faLink,
   faAt,
+  faSignature,
 );
 
 const store = configureStore(api, history);
