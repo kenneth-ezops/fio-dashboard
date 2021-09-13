@@ -11,6 +11,7 @@ import notifications from './notifications/reducer';
 import registrations from './registrations/reducer';
 import cart from './cart/reducer';
 import reduxForm from './reduxForm/reducer';
+import nftSignatures from './nftSignatures/reducer';
 
 export default combineReducers({
   profile,
@@ -24,4 +25,5 @@ export default combineReducers({
   registrations,
   cart,
   reduxForm,
+  nftSignatures,
 });
