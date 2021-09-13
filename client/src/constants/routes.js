@@ -28,6 +28,7 @@ const ROUTES = {
   FIO_ADDRESS_RENEW: '/fio-address-renew',
   FIO_DOMAIN_RENEW: '/fio-domain-renew',
   FIO_NAME_RENEW_RESULTS: '/fio-name-results',
+  FIO_ADDRESS_SIGNATURES: `/fio-address-signatures/:address`,
 };
 
 export { ROUTES };
