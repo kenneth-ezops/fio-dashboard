@@ -36,6 +36,7 @@ import {
   faWallet,
   faPlusCircle,
   faSignature,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -87,6 +88,7 @@ library.add(
   faLink,
   faAt,
   faSignature,
+  faPen,
 );
 
 const store = configureStore(api, history);
