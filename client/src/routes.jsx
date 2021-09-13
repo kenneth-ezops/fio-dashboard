@@ -23,6 +23,7 @@ import FioDomainRenewPage from './pages/FioDomainRenewPage';
 
 import { ROUTES } from './constants/routes';
 import FioAddressSignaturesPage from './pages/FioAddressSignaturesPage';
+import FioAddressSignPage from './pages/FioAddressSignPage';
 
 const Routes = () => (
   <MainLayout>
@@ -39,6 +40,11 @@ const Routes = () => (
         <PrivateRoute
           path={ROUTES.FIO_ADDRESS_SIGNATURES}
           component={FioAddressSignaturesPage}
+          exact
+        />
+        <PrivateRoute
+          path={ROUTES.FIO_ADDRESS_SIGN}
+          component={FioAddressSignPage}
           exact
         />
         <PrivateRoute
