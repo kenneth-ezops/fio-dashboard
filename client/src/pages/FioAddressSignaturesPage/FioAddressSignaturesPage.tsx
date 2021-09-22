@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import classes from './FioAddressSignaturesPage.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NFTSignature } from '../../redux/nftSignatures/types';
+import { NftItem } from '@fioprotocol/fiosdk/src/entities/NftItem';
 import { v4 as uuidv4 } from 'uuid';
 import { ROUTES } from '../../constants/routes';
 
 type Props = {
   getSignaturesFromFioAddress: (fioAddress: string) => void;
-  nftSignatures: NFTSignature[];
+  nftSignatures: NftItem[];
   match: {
     params: { address: string };
   };
@@ -49,7 +49,11 @@ const FioAddressSignaturesPage: React.FC<Props> = props => {
         <Col lg="2">
           <Button
             className={classes.actionButton}
-            onClick={() => history.push(ROUTES.FIO_ADDRESS_SIGN)}
+            onClick={() => {
+              history.push(
+                ROUTES.FIO_ADDRESS_SIGN.replace(':address', address),
+              );
+            }}
           >
             <FontAwesomeIcon icon="pen" className={classes.iconButton} />
             <span>Sign NFT</span>
@@ -60,7 +64,7 @@ const FioAddressSignaturesPage: React.FC<Props> = props => {
         <Col className={classes.listTitle}>Signed NFTs</Col>
       </Row>
       {nftSignatures &&
-        nftSignatures.map((item: NFTSignature) => {
+        nftSignatures.map((item: NftItem) => {
           return (
             <Row
               key={`signature-${uuidv4()}`}
@@ -69,19 +73,19 @@ const FioAddressSignaturesPage: React.FC<Props> = props => {
               <Col lg="auto" className={classes.signatureItemText}>
                 Chain code:{' '}
                 <span className={classes.signatureItemTextValue}>
-                  {item.chainCode}
+                  {item.chain_code}
                 </span>
               </Col>
               <Col lg="auto" className={classes.signatureItemText}>
                 Token ID:{' '}
                 <span className={classes.signatureItemTextValue}>
-                  {item.tokenId}
+                  {item.token_id}
                 </span>
               </Col>
               <Col lg="auto" className={classes.signatureItemText}>
                 Contract Address:{' '}
                 <span className={classes.signatureItemTextValue}>
-                  {item.contractAddress}
+                  {item.contract_address}
                 </span>
               </Col>
               <Col lg="auto">

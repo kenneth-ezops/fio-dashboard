@@ -1,11 +1,12 @@
 import { combineReducers } from 'redux';
-import { NFTSignature } from './types';
+import { NftItem } from '@fioprotocol/fiosdk/src/entities/NftItem';
 import * as actions from './actions';
+
 export default combineReducers({
-  list(state: NFTSignature[] = [], action) {
+  list(state: NftItem[] = [], action) {
     switch (action.type) {
       case actions.FIO_SIGNATURE_ADDRESS_SUCCESS:
-        return [...action.data];
+        return [...action.data.nfts];
       default:
         return state;
     }
