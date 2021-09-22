@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import { ErrorBadge } from './ErrorBadge';
+import { ErrorBadge, COLOR_TYPE } from './ErrorBadge';
 import { ClearInput, CopyButton, ShowPassword } from './InputActionButtons';
 
 import classes from './Input.module.scss';
@@ -13,12 +13,15 @@ export const INPUT_UI_STYLES = {
   BLACK_WHITE: 'blackWhite',
 };
 
-type Props = {
-  hideError?: boolean;
+export type InputProps = {
   input: any;
-  loading?: boolean;
-  lowerCased: boolean;
   meta: any;
+};
+
+export type FieldProps = {
+  hideError?: boolean;
+  loading?: boolean;
+  lowerCased?: boolean;
   onClose?: (flag: boolean) => void;
   showClearInput?: boolean;
   showCopyButton?: boolean;
@@ -26,7 +29,12 @@ type Props = {
   type: string;
   errorType?: string;
   uiType?: string;
+  upperCased?: boolean;
+  errorUIColor?: string;
+  showErrorBorder?: boolean;
 };
+
+type Props = InputProps & FieldProps;
 
 const InputRedux: React.FC<Props> = props => {
   const {
@@ -42,6 +50,9 @@ const InputRedux: React.FC<Props> = props => {
     type,
     errorType = '',
     uiType,
+    upperCased,
+    errorUIColor = COLOR_TYPE.WHITE,
+    showErrorBorder,
     ...rest
   } = props;
 
@@ -78,7 +89,8 @@ const InputRedux: React.FC<Props> = props => {
 
   const hasError =
     (error && (touched || modified || submitSucceeded) && !active) ||
-    (submitError && !modifiedSinceLastSubmit);
+    (submitError && !modifiedSinceLastSubmit) ||
+    showErrorBorder;
 
   return (
     <div className={classes.regInputWrapper}>
@@ -103,6 +115,7 @@ const InputRedux: React.FC<Props> = props => {
           onChange={e => {
             const currentValue = e.target.value;
             if (lowerCased) return onChange(currentValue.toLowerCase());
+            if (upperCased) return onChange(currentValue.toUpperCase());
             onChange(currentValue);
           }}
           type={showPass ? 'text' : type}
@@ -145,6 +158,7 @@ const InputRedux: React.FC<Props> = props => {
           hasError={hasError}
           submitError={submitError}
           type={errorType}
+          color={errorUIColor}
         />
       )}
     </div>

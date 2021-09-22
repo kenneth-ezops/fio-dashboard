@@ -3,25 +3,25 @@ import { BADGE_TYPES } from '../../components/Badge/Badge';
 import { ACTIONS } from '../../components/Notifications/Notifications';
 import { setWallets } from '../account/actions';
 import { refreshBalance } from '../fio/actions';
+import { refProfileInfo } from '../refProfile/selectors';
 import {
   LOGIN_SUCCESS,
   PROFILE_SUCCESS,
   SIGNUP_SUCCESS,
   LOGOUT_SUCCESS,
-  SET_RECOVERY_SUCCESS,
   NONCE_SUCCESS,
   loadProfile,
   login,
 } from './actions';
 
-import { closeRecoveryModal, closeLoginModal } from '../modal/actions';
+import { closeLoginModal } from '../modal/actions';
 import {
   listNotifications,
   createNotification,
 } from '../notifications/actions';
-import { setRedirectPath } from '../router/actions';
+import { setRedirectPath } from '../navigation/actions';
 
-import { hasRedirect } from '../router/selectors';
+import { hasRedirect } from '../navigation/selectors';
 import { fioWallets } from '../fio/selectors';
 import { ROUTES } from '../../constants/routes';
 
@@ -33,8 +33,6 @@ export function* loginSuccess(history, api) {
     if (wallets && wallets.length) yield put(setWallets(wallets));
     yield put(loadProfile());
     yield put(listNotifications());
-    const currentLocation = history.location.pathname;
-    if (currentLocation === '/') yield history.push(ROUTES.HOME);
     if (hasRedirectTo) {
       yield history.push(hasRedirectTo);
     }
@@ -74,20 +72,17 @@ export function* logoutSuccess(history, api) {
   });
 }
 
-export function* setRecoverySuccess() {
-  yield takeEvery(SET_RECOVERY_SUCCESS, function*() {
-    yield put(closeRecoveryModal());
-  });
-}
-
 export function* nonceSuccess() {
   yield takeEvery(NONCE_SUCCESS, function*(action) {
     const { email, signature, nonce } = action.data;
+    const refProfile = yield select(refProfileInfo);
+
     yield put(
       login({
         email,
         signature,
         challenge: nonce,
+        referrerCode: refProfile != null ? refProfile.code : null,
       }),
     );
   });

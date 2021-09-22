@@ -6,6 +6,9 @@ import { Link } from 'react-router-dom';
 import { FioWalletDoublet } from '../../types';
 
 import { BANNER_DATA, PAGE_NAME } from './constants';
+import { ROUTES } from '../../constants/routes';
+import { fioNameLabels } from '../../constants/labels';
+import { DOMAIN_STATUS } from '../../constants/common';
 import {
   DefaultProps,
   BoolStateFunc,
@@ -23,9 +26,6 @@ import DomainStatusBadge from '../Badges/DomainStatusBadge/DomainStatusBadge';
 
 import classes from './ManagePageComponents.module.scss';
 import icon from '../../assets/images/timelapse_white_24dp.svg'; // todo: remove after changing library to google material
-import { ROUTES } from '../../constants/routes';
-import { fioNameLabels } from '../../constants/labels';
-import { DOMAIN_STATUS } from '../../constants/common';
 
 const RENEW_LINKS = {
   address: ROUTES.FIO_ADDRESS_RENEW,
@@ -124,22 +124,39 @@ const renderActions: React.FC<ActionButtonProps &
 
   return (
     <div className={classes.actionButtonsContainer}>
-      <Link to={`${RENEW_LINKS[pageName]}/${name}`}>
-        <Button className={classes.actionButton}>
+      <Link
+        to={`${RENEW_LINKS[pageName]}/${name}`}
+        className={classes.actionButton}
+      >
+        <Button>
           <img src={icon} alt="timelapse" /> Renew
         </Button>
       </Link>
 
       {pageName === PAGE_NAME.ADDRESS ? (
-        <Button className={classes.actionButton}>
-          <FontAwesomeIcon icon="link" className={classes.linkIcon} /> Link
-        </Button>
+        <Link
+          to={`${ROUTES.LINK_TOKEN_LIST}/${name}`}
+          className={classes.actionButton}
+        >
+          <Button>
+            <FontAwesomeIcon icon="link" className={classes.linkIcon} /> Link
+          </Button>
+        </Link>
       ) : (
         <Button className={classes.actionButton}>
           <FontAwesomeIcon icon="at" className={classes.atIcon} />
           {isDesktop ? 'Register FIO Address' : 'Register Address'}
         </Button>
       )}
+      <Link
+        to={`${ROUTES.FIO_ADDRESS_SIGNATURES}`.replace(':address', name)}
+        className={classes.actionButton}
+      >
+        <Button>
+          <FontAwesomeIcon icon="signature" className={classes.atIcon} /> NFT
+          signature
+        </Button>
+      </Link>
       <Button
         className={classes.actionButton}
         onClick={() => onClickSignature(fioNameItem)}

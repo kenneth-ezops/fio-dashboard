@@ -1,7 +1,8 @@
 import { prefix } from './actions';
 import { emptyWallet } from './reducer';
 import { getElementByFioName } from '../../utils';
-import { FioNameItemProps, FioWalletDoublet, ReduxState } from '../../types';
+import { FioNameItemProps, FioWalletDoublet } from '../../types';
+import { ReduxState } from '../../redux/init';
 
 export const loading = (state: ReduxState) => state[prefix].loading;
 export const transferProcessing = (state: ReduxState) =>
@@ -24,6 +25,7 @@ export const transactionResult = (state: ReduxState) =>
 export const fees = (state: ReduxState) => state[prefix].fees;
 export const feesLoading = (state: ReduxState) => state[prefix].feesLoading;
 export const linkResults = (state: ReduxState) => state[prefix].linkResults;
+export const nftSignatures = (state: ReduxState) => state[prefix].nftList;
 
 export const currentWallet = (
   state: ReduxState,
@@ -46,6 +48,38 @@ export const currentWallet = (
     );
 
   return currentWallet || emptyWallet;
+};
+
+export const currentFioAddress = (state: ReduxState, ownProps: any) => {
+  const publicAddresses = [
+    {
+      chainCode: 'FIO',
+      tokenCode: 'FIO',
+      publicAddress: 'FIO6cp3eJMhtAuQvzetCAqcUAyLBabHj8M8hJD5nA8T1p7FoXaTd2',
+    },
+    {
+      chainCode: 'ETH',
+      tokenCode: 'ETH',
+      publicAddress: 'ETHxab5801a7d398351b8be11c439e05c5b3259aec9b',
+    },
+    {
+      chainCode: 'BTC',
+      tokenCode: 'BTC',
+      publicAddress: 'BTCxab5801a7d398351b8be11c439e05c5b3259aec9b',
+    },
+  ]; // todo: remove on get real public addresses
+
+  const { fioAddresses } = state.fio;
+  const {
+    match: {
+      params: { id },
+    },
+  } = ownProps;
+
+  return {
+    ...getElementByFioName({ fioNameList: fioAddresses, name: id }),
+    publicAddresses,
+  };
 };
 
 export const walletPublicKey = (

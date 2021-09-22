@@ -1,18 +1,10 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
-import { FioWalletDoublet, LastAuthData } from '../../types';
-
-type User = {
-  email: string;
-  username: string;
-  fioWallets: FioWalletDoublet[];
-  freeAddresses: { name: string }[];
-  id: string;
-  role: string;
-  secretSetNotification: boolean;
-  status: string;
-  secretSet?: boolean;
-};
+import {
+  CHANGE_RECOVERY_QUESTIONS_CLOSE,
+  CHANGE_RECOVERY_QUESTIONS_OPEN,
+} from '../edge/actions';
+import { User, LastAuthData } from '../../types';
 
 export default combineReducers({
   loading(state: boolean = false, action) {
@@ -132,6 +124,31 @@ export default combineReducers({
       case actions.PROFILE_SUCCESS:
       case actions.PROFILE_FAILURE:
         return true;
+      default:
+        return state;
+    }
+  },
+  lastActivityDate(state: number = 0, action) {
+    switch (action.type) {
+      case actions.SECONDS_SINCE_LAST_ACTIVITY:
+        return action.data;
+      case actions.LOGOUT_SUCCESS:
+        return 0;
+      default:
+        return state;
+    }
+  },
+  changeRecoveryQuestionsResults(state = {}, action) {
+    switch (action.type) {
+      case actions.SET_RECOVERY_SUCCESS: {
+        return { status: 1 };
+      }
+      case actions.SET_RECOVERY_REQUEST:
+      case actions.SET_RECOVERY_FAILURE:
+      case CHANGE_RECOVERY_QUESTIONS_CLOSE:
+      case CHANGE_RECOVERY_QUESTIONS_OPEN: {
+        return {};
+      }
       default:
         return state;
     }

@@ -4,13 +4,13 @@ import {
   loginSuccess,
   signupSuccess,
   logoutSuccess,
-  setRecoverySuccess,
   profileSuccess,
   nonceSuccess,
 } from './profile/sagas';
 import { edgeLoginSuccess } from './edge/sagas';
 import { listFailure } from './users/sagas';
 import { notify } from './notify/sagas';
+import { fioAddressRegisterSuccess, refLoginSuccess } from './refProfile/sagas';
 
 export default function* rootSaga(history, api) {
   yield all([
@@ -21,7 +21,8 @@ export default function* rootSaga(history, api) {
     edgeLoginSuccess(),
     listFailure(history),
     signupSuccess(history),
-    setRecoverySuccess(),
     notify(history),
+    fioAddressRegisterSuccess(history),
+    refLoginSuccess(),
   ]);
 }

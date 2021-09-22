@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
+import { ConnectedRouter } from 'connected-react-router';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { LastLocationProvider } from 'react-router-last-location';
-
-import { addLocationQuery } from './helpers/routeParams';
 
 import {
   faEye,
@@ -35,27 +32,23 @@ import {
   faTrash,
   faWallet,
   faPlusCircle,
-  faSignature,
   faPen,
+  faCheckSquare,
+  faCheck,
+  faSignature,
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
   faCircle as faRegularCircle,
   faClipboard as faRegularClipboard,
+  faSquare as faRegularSquare,
 } from '@fortawesome/free-regular-svg-icons';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import api from './api';
-import configureStore from './redux/store';
+import { store, history } from './redux/init';
 
 import Routes from './routes';
-
-const history = createHistory();
-
-addLocationQuery(history);
-
-history.listen(() => addLocationQuery(history));
 
 library.add(
   faEye,
@@ -87,11 +80,13 @@ library.add(
   faExclamationTriangle,
   faLink,
   faAt,
+  faPen,
+  faCheckSquare,
+  faRegularSquare,
+  faCheck,
   faSignature,
   faPen,
 );
-
-const store = configureStore(api, history);
 
 export default class App extends Component {
   render() {

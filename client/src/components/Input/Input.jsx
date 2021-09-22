@@ -7,9 +7,15 @@ import { ErrorBadge } from './ErrorBadge';
 
 import classes from './Input.module.scss';
 import { PIN_LENGTH } from '../../constants/form';
+import { CopyButton } from './InputActionButtons';
 
 export const INPUT_COLOR_SCHEMA = {
   BLACK_AND_WHITE: 'black_and_white',
+};
+
+export const INPUT_UI_STYLES = {
+  BLACK_LIGHT: 'blackLight',
+  BLACK_WHITE: 'blackWhite',
 };
 
 const regularInputWrapper = children => (
@@ -23,11 +29,17 @@ const Input = props => {
     colorSchema,
     onClose,
     hideError,
+    showCopyButton,
     isFree,
     tooltip,
     loading,
+    uiType,
+    errorType = '',
     suffix = '',
+    upperCased = false,
     lowerCased = false,
+    disabled,
+    showErrorBorder,
     ...rest
   } = props;
   const {
@@ -56,7 +68,6 @@ const Input = props => {
       (touched || modified || submitSucceeded) &&
       !active) || // todo: remove !active to show red border on focused field. make debounce on create account user field
     (submitError && !modifiedSinceLastSubmit);
-
   useEffect(() => {
     toggleClearInput(value !== '');
   });
@@ -125,16 +136,19 @@ const Input = props => {
         <input
           className={classnames(
             classes.regInput,
-            hasError && classes.error,
+            (hasError || showErrorBorder) && classes.error,
+            uiType && classes[uiType],
             isBW && classes.bw,
             suffix && classes.suffixSpace,
             type === 'password' && classes.doubleIconInput,
           )}
+          disabled={disabled}
           {...input}
           {...rest}
           onChange={e => {
             const currentValue = e.target.value;
             if (lowerCased) return onChange(currentValue.toLowerCase());
+            if (upperCased) return onChange(currentValue.toUpperCase());
             onChange(currentValue);
           }}
           type={showPass ? 'text' : type}
@@ -147,8 +161,10 @@ const Input = props => {
               classes.inputIcon,
               type === 'password' && classes.doubleIcon,
               isBW && classes.bw,
+              disabled && classes.disabled,
             )}
             onClick={() => {
+              if (disabled) return;
               clearInputFn();
               if (onClose) {
                 onClose(false);
@@ -159,8 +175,24 @@ const Input = props => {
         {clearInput && type === 'password' && (
           <FontAwesomeIcon
             icon={!showPass ? 'eye' : 'eye-slash'}
-            className={classes.inputIcon}
-            onClick={() => toggleShowPass(!showPass)}
+            className={classnames(
+              classes.inputIcon,
+              disabled && classes.disabled,
+            )}
+            onClick={() => !disabled && toggleShowPass(!showPass)}
+          />
+        )}
+        {showCopyButton && (
+          <CopyButton
+            onClick={async () => {
+              try {
+                const data = await navigator.clipboard.readText();
+                onChange(data);
+              } catch (e) {
+                console.error('Paste error: ', e);
+              }
+            }}
+            uiType={uiType}
           />
         )}
         {loading && (
@@ -176,6 +208,7 @@ const Input = props => {
           error={error}
           data={data}
           hasError={hasError}
+          type={errorType}
           submitError={submitError}
         />
       )}

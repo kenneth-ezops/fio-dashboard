@@ -17,6 +17,8 @@ router.get('/users', checkAuth, routes.users.list);
 router.get('/users/:id', checkAuth, routes.users.show);
 router.post('/users', routes.users.create);
 router.put('/users', checkAuth, routes.users.update);
+router.post('/users/setRecovery', checkAuth, routes.users.setRecovery);
+router.post('/users/resendRecovery', checkAuth, routes.users.resendRecovery);
 
 router.get('/notifications', checkAuth, routes.notifications.list);
 router.post('/notifications', checkAuth, routes.notifications.create);
@@ -29,5 +31,7 @@ router.post('/reg/captcha/init', checkAuth, routes.external.initCaptcha);
 
 router.get('/account/wallets', checkAuth, routes.account.walletsList);
 router.post('/account/wallets', checkAuth, routes.account.setWallets);
+
+router.get('/ref-profile/:code', routes.refProfiles.info);
 
 export default router;

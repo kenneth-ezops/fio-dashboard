@@ -1,22 +1,14 @@
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
-import { Field, InjectedFormProps } from 'redux-form';
-import { Button } from 'react-bootstrap';
-import debounce from 'lodash/debounce';
+import React, { useEffect, useState } from 'react';
 
 import PseudoModalContainer from '../PseudoModalContainer';
-import InputRedux, { INPUT_UI_STYLES } from '../Input/InputRedux';
 import { BADGE_TYPES } from '../Badge/Badge';
-import PriceBadge from '../Badges/PriceBadge/PriceBadge';
-import PayWithBadge from '../Badges/PayWithBadge/PayWithBadge';
-import LowBalanceBadge from '../Badges/LowBalanceBadge/LowBalanceBadge';
 import InfoBadge from '../InfoBadge/InfoBadge';
+import { TransferForm } from './FioNameTransferForm';
+import Results from '../common/TransactionResults';
 
 import { ROUTES } from '../../constants/routes';
 import { ContainerProps, TransferParams } from './types';
-
-import classes from './FioNameTransferContainer.module.scss';
 import { fioNameLabels } from '../../constants/labels';
-import { ERROR_UI_TYPE } from '../Input/ErrorBadge';
 import {
   CONFIRM_PIN_ACTIONS,
   MANAGE_PAGE_REDIRECT,
@@ -25,11 +17,11 @@ import { hasFioAddressDelimiter, waitForEdgeAccountStop } from '../../utils';
 import { PinConfirmation } from '../../types';
 import Processing from '../common/TransactionProcessing';
 import { Redirect } from 'react-router-dom';
-import Results from '../common/TransactionResults';
 import { TRANSFER_REQUEST } from '../../redux/fio/actions';
 import { ResultsData } from '../common/TransactionResults/types';
 
-const PLACEHOLDER = 'Enter FIO Address or FIO Public Key of New Owner';
+import classes from './FioNameTransferContainer.module.scss';
+
 const FIO_NAME_DATA = {
   address: {
     infoMessage: 'Transferring a FIO Address will purge all linked wallets',
@@ -44,8 +36,7 @@ const FIO_NAME_DATA = {
   },
 };
 
-export const FioNameTransferContainer: React.FC<ContainerProps &
-  InjectedFormProps<{}, ContainerProps>> = props => {
+export const FioNameTransferContainer: React.FC<ContainerProps> = props => {
   const {
     walletPublicKey,
     currentWallet,
@@ -62,16 +53,10 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
     getPrices,
     showPinModal,
     resetPinConfirm,
-    transferAddressValue,
-    asyncValidate,
-    valid,
-    dirty,
-    asyncValidating,
   } = props;
 
-  const { costFio, costUsdc } = feePrice;
-  const [formIsValid, setFormIsValid] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [resultsData, setResultsData] = useState<ResultsData | null>(null);
 
   useEffect(() => {
@@ -80,22 +65,23 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
     refreshBalance(walletPublicKey);
   }, []);
 
-  useEffect(() => {
-    setFormIsValid(valid && !asyncValidating && dirty);
-  }, [asyncValidating]);
-
-  useEffect(() => {
-    setFormIsValid(false);
-  }, [transferAddressValue]);
-
   // Handle pin confirmation
   useEffect(() => {
     submit(pinConfirmation);
   }, [pinConfirmation]);
 
+  useEffect(() => {
+    if (!processing) {
+      setSubmitting(false);
+    }
+  }, [processing]);
+
   // Handle results
   useEffect(() => {
     if (!transferProcessing && processing) {
+      const {
+        data: { transferAddress },
+      } = pinConfirmation;
       resetPinConfirm();
 
       setResultsData({
@@ -103,9 +89,7 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
         name,
         publicKey:
           trxResult.newOwnerKey ||
-          (hasFioAddressDelimiter(transferAddressValue)
-            ? ''
-            : transferAddressValue),
+          (hasFioAddressDelimiter(transferAddress) ? '' : transferAddress),
         error: trxResult.error,
       });
       setProcessing(false);
@@ -118,6 +102,7 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
       keys: walletKeys,
       error: confirmationError,
       action: confirmationAction,
+      data,
     } = pinConfirmation;
 
     if (confirmationAction !== CONFIRM_PIN_ACTIONS.TRANSFER) return;
@@ -129,14 +114,15 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
       !processing
     ) {
       setProcessing(true);
+      const { transferAddress } = data;
       await waitForEdgeAccountStop(edgeAccount);
       const transferParams: TransferParams = {
         fioName: name,
         fee: feePrice.nativeFio,
         keys: walletKeys[currentWallet.id],
-        ...(hasFioAddressDelimiter(transferAddressValue)
-          ? { newOwnerFioAddress: transferAddressValue }
-          : { newOwnerKey: transferAddressValue }),
+        ...(hasFioAddressDelimiter(transferAddress)
+          ? { newOwnerFioAddress: transferAddress }
+          : { newOwnerKey: transferAddress }),
       };
 
       transfer(transferParams);
@@ -145,16 +131,8 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
     if (confirmationError) setProcessing(false);
   };
 
-  const debouncedValidate = useCallback(
-    debounce(() => {
-      asyncValidate();
-    }, 500),
-    [],
-  );
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    showPinModal(CONFIRM_PIN_ACTIONS.TRANSFER);
+  const onSubmit = (transferAddress: string) => {
+    showPinModal(CONFIRM_PIN_ACTIONS.TRANSFER, { transferAddress });
   };
 
   const onResultsClose = () => {
@@ -164,12 +142,6 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
   const onResultsRetry = () => {
     setResultsData(null);
   };
-
-  const fioNameLabel = fioNameLabels[pageName];
-  const title = `Transfer FIO ${fioNameLabel} Ownership`;
-
-  const hasLowBalance =
-    currentWallet && feePrice && currentWallet.balance < feePrice.costFio;
 
   if (resultsData)
     return (
@@ -190,6 +162,8 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
   if (!walletPublicKey && !processing)
     return <Redirect to={{ pathname: FIO_NAME_DATA[pageName].backLink }} />;
 
+  const title = `Transfer FIO ${fioNameLabels[pageName]} Ownership`;
+
   return (
     <PseudoModalContainer link={FIO_NAME_DATA[pageName].backLink} title={title}>
       <div className={classes.container}>
@@ -199,43 +173,11 @@ export const FioNameTransferContainer: React.FC<ContainerProps &
           type={BADGE_TYPES.INFO}
           show={true}
         />
-        <p className={classes.nameContainer}>
-          {fioNameLabel}: <span className={classes.name}>{name}</span>
-        </p>
-        <p className={classes.label}>Transfer Information</p>
-        <form onSubmit={handleSubmit} className={classes.form}>
-          <Field
-            name="transferAddress"
-            type="text"
-            placeholder={PLACEHOLDER}
-            component={InputRedux}
-            showCopyButton={true}
-            uiType={INPUT_UI_STYLES.BLACK_WHITE}
-            onChange={debouncedValidate}
-            errorType={ERROR_UI_TYPE.BADGE}
-            loading={asyncValidating}
-          />
-          <p className={classes.label}>{fioNameLabel} Transfer Cost</p>
-          <PriceBadge
-            costFio={costFio}
-            costUsdc={costUsdc}
-            title={`${fioNameLabel} Transfer Fee`}
-            type={BADGE_TYPES.BLACK}
-          />
-          <PayWithBadge
-            costFio={costFio}
-            costUsdc={costUsdc}
-            currentWallet={currentWallet}
-          />
-          <LowBalanceBadge hasLowBalance={hasLowBalance} />
-          <Button
-            type="submit"
-            className={classes.button}
-            disabled={hasLowBalance || !formIsValid || processing}
-          >
-            Transfer Now
-          </Button>
-        </form>
+        <TransferForm
+          {...props}
+          onSubmit={onSubmit}
+          processing={processing || submitting}
+        />
         <Processing isProcessing={processing} />
       </div>
     </PseudoModalContainer>
