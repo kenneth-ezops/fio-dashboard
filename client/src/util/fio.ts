@@ -1,5 +1,9 @@
-import isEmpty from 'lodash/isEmpty';
+import { TextDecoder, TextEncoder } from 'text-encoding';
+import { Transactions as FioTransactionsProvider } from '@fioprotocol/fiosdk/lib/transactions/Transactions';
 import { PublicAddress } from '@fioprotocol/fiosdk/src/entities/PublicAddress';
+import { Api as ChainApi, Numeric as ChainNumeric } from '@fioprotocol/fiojs';
+import isEmpty from 'lodash/isEmpty';
+
 import apis from '../api/index';
 import { sleep, isDomain } from '../utils';
 import { FREE_ADDRESS_REGISTER_ERROR, ERROR_TYPES } from '../constants/errors';
@@ -15,6 +19,7 @@ import {
   Prices,
   PublicAddressDoublet,
 } from '../types';
+import { RawTransaction } from '../api/fio';
 
 export const waitForAddressRegistered = async (fioAddress: string) => {
   const CALL_INTERVAL = 3000; // 3 sec
@@ -236,3 +241,42 @@ export const statusBadgeColours = (status: string) => ({
 });
 
 export const isFioChain = (chain: string) => chain === CHAIN_CODES.FIO;
+
+export const serializeTransaction = async (
+  tx: RawTransaction,
+): Promise<string> => {
+  try {
+    const abiProvider: any = {
+      getRawAbi: async (accountName: string) => {
+        const rawAbi = FioTransactionsProvider.abiMap.get(accountName);
+        if (!rawAbi) {
+          throw new Error(`Missing ABI for account ${accountName}`);
+        }
+        const abi = ChainNumeric.base64ToBinary(rawAbi.abi);
+        const binaryAbi: any = { accountName: rawAbi.account_name, abi };
+        return binaryAbi;
+      },
+    };
+    const chainApi = new ChainApi({
+      signatureProvider: null,
+      authorityProvider: null,
+      abiProvider,
+      chainId: null,
+      textDecoder: new TextDecoder(),
+      textEncoder: new TextEncoder(),
+    });
+    tx = {
+      ...tx,
+      context_free_actions: await chainApi.serializeActions(
+        tx.context_free_actions || [],
+      ),
+      actions: await chainApi.serializeActions(tx.actions),
+    };
+
+    return Buffer.from(chainApi.serializeTransaction(tx)).toString('hex');
+  } catch (e) {
+    console.error(e);
+  }
+
+  return '';
+};
