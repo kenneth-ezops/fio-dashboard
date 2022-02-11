@@ -42,8 +42,8 @@ const SendLedgerWallet: React.FC<Props> = props => {
       authorization,
     }: TrxData = await apis.fio.getDataForTx(fioWallet.publicKey);
     const { account, name, data } = apis.fio.getTransferTokensAction(
-      sendData.to,
-      sendData.amount,
+      sendData.toPubKey,
+      sendData.nativeAmount,
       fee,
     );
 

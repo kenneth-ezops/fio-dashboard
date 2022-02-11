@@ -322,7 +322,7 @@ export default class Fio {
 
   getTransferTokensAction = (
     publicKey: string,
-    amount: number,
+    amount: string,
     fee: number,
   ) => {
     return {

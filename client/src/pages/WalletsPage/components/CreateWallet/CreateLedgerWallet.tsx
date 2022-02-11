@@ -44,7 +44,7 @@ const CreateLedgerWallet: React.FC<Props> = props => {
     try {
       publicKey = await getPubKeyFromLedger(appFio, derivationIndex);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     if (

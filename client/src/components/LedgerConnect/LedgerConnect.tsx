@@ -76,15 +76,15 @@ const LedgerConnect: React.FC<Props> = props => {
   }, [transport, connecting]);
 
   const connect = async () => {
-    const isSupported = await TransportWebUSB.isSupported();
-    setIsSupported(isSupported);
-    if (!isSupported) return;
+    const isTransportSupported = await TransportWebUSB.isSupported();
+    setIsSupported(isTransportSupported);
+    if (!isTransportSupported) return;
 
     setConnecting(true);
 
     try {
-      const transport = await TransportWebUSB.create();
-      setTransport(transport);
+      const newTransport = await TransportWebUSB.create();
+      setTransport(newTransport);
     } catch (e) {
       onCancel();
     }
@@ -136,7 +136,7 @@ const LedgerConnect: React.FC<Props> = props => {
 
       onSuccess(result);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       showGenericErrorModal('Try to reconnect your ledger device.');
       onCancel();
     }
