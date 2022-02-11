@@ -68,7 +68,16 @@ export default class Fio {
     this.publicFioSDK = new FIOSDK('', '', this.baseurl, window.fetch);
   }
 
-  amountToSUF = (amount: number): number => FIOSDK.amountToSUF(amount);
+  amountToSUF = (amount: number): number => {
+    const floor = Math.floor(amount);
+    const tempResult = floor * FIOSDK.SUFUnit;
+    // get remainder
+    const remainder: number = Number((amount % 1).toFixed(9));
+    const remainderResult = remainder * FIOSDK.SUFUnit;
+    const floorRemainder = Math.floor(remainderResult);
+    // add integer and remainder
+    return tempResult + floorRemainder;
+  };
 
   sufToAmount = (suf?: number): number | null => {
     if (!suf && suf !== 0) return null;
