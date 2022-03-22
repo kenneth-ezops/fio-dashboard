@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, FormRenderProps } from 'react-final-form';
+
 import { FormApi } from 'final-form';
 import * as Scroll from 'react-scroll';
 import debounce from 'lodash/debounce';
@@ -59,6 +60,12 @@ const AddressDomainForm: React.FC<AddressDomainFormProps> = props => {
       refreshFioNames(fioWallet.publicKey);
     }
   }, [fioWallets, refreshFioNames]);
+
+  useEffect(() => {
+    for (const fioWallet of fioWallets) {
+      refreshFioNames(fioWallet.publicKey);
+    }
+  }, [fioWallets]);
 
   const validationProps = {
     options,

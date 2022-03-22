@@ -97,7 +97,6 @@ const AddressForm: React.FC<AddressFormProps> = (props: AddressFormProps) => {
             isWhiteIcon={true}
             noMinWidth={true}
             placeholder="Select Domain"
-            hideError={true}
           />
         )}
         <OnChange name="domain">

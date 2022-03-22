@@ -10,6 +10,7 @@ import {
   FioNameType,
   FioWalletDoublet,
 } from '../../types';
+import React from 'react';
 
 type Error =
   | {
