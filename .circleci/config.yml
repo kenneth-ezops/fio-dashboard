@@ -25,7 +25,7 @@ jobs:
             - fio-dapp-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}
       - run:
           name: Install packages if no cached
-          command: test -d node_modules || npm install
+          command: npm install --legacy-peer-deps
       - save_cache:
           key: fio-dapp-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}
           paths:
